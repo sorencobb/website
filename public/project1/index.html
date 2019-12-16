@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Soren Cobb" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1: Approval Ratings During The Mueller Investigation</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Project 1: Approval Ratings During The Mueller Investigation</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="soren-cobb-scc2734" class="section level1">
+<h1>Soren Cobb, scc2734</h1>
+<p>install.packages(“fivethirtyeight”) install.packages(“Hmisc”) install.packages(“pastecs”)</p>
+<div id="introduction" class="section level2">
+<h2>0. Introduction:</h2>
+<p>I chose to conduct this exploratory data analysis on two datasets provided by the ‘fivethirteight’ package that include statistics on the approval ratings of both President Donald Trump, and special prosecutor Robert Mueller during the Special Counsel investigation of Russia’s alleged interference with the 2016 presidential election. Due to its fascinating scope and signifance in U.S. government and politics, this is a story that I have been following closely since 2017 and I was intrigued to analyze how the public’s perception of both Trump and Mueller shifted throughout the investigation. The datasets contain informative polling variables taken throughout the course of the investigation. These include the date of completion of the poll (end), Mueller’s overall approval rating (approve.x), the size of the poll sample (sample_size.x), his approval rating with Democrats (approval_democrat), his approval rating with Republicans (approval_republican), Trump’s adjusted approval rating (adjusted.approve), the Pollster that produced Trump’s approval rating (pollster.y), and the weight/historical accuracy of such Pollster (weight). Due to many controversial events throughout the investigation, I expect to see rapid shifts in approval rating that coincide with signifcant events such as the firing of James Comey and subsequent hiring of Mueller, and William Barr providing his summary to Congress. I am also interested to see if there is a discrepancy in Trump’s average approval rating between conservative and liberal Pollsters.</p>
+</div>
+<div id="tidying-rearranging-widelong" class="section level2">
+<h2>1. Tidying: Rearranging Wide/Long</h2>
+<p>Couldn’t get the reshaping to work, but the dataset is already tidy.</p>
+</div>
+<div id="joiningmerging-datasets" class="section level2">
+<h2>2. Joining/Merging Datasets:</h2>
+<p>The two datasets were fully joined together by their shared date of polls. Only the desired variables were selected, as discussed earlier, which were the date of completion of the poll (end), Mueller’s overall approval rating (approve.x), the size of the sample (sample_size.x) , his approval rating with Democrats (approval_democrat), his approval rating with Republicans (approval_republican), Trump’s adjusted approval rating (adjusted.approve), the Pollster that produced Trump’s approval rating (pollster.y), and the weight/historical accuracy of such Pollster (weight). NA/s for both the Mueller Pollster and Trump’s Approval were dropped to remove rows, or poll dates, that contained polling data for only one of the individuals.</p>
+<pre class="r"><code>initial_approvals_table &lt;- full_join(mueller_approval_polls, trump_approval_poll, by=c(&quot;end&quot;=&quot;end_date&quot;))
+polling &lt;- initial_approvals_table %&gt;% select(end, sample_size.x, weight, pollster.x, pollster.y, approve.x, approve_republican, approve_democrat, adjusted_approve) %&gt;% drop_na(pollster.x) %&gt;% drop_na(adjusted_approve)
+glimpse(polling)</code></pre>
+<pre><code>## Observations: 344
+## Variables: 9
+## $ end                &lt;date&gt; 2017-07-17, 2017-07-17, 2017-07-17, 2017-07-…
+## $ sample_size.x      &lt;dbl&gt; 1500, 1500, 1500, 1500, 1500, 1500, 1500, 150…
+## $ weight             &lt;dbl&gt; 0.1491304, 0.2439686, 0.1513301, 1.2241000, 0…
+## $ pollster.x         &lt;fct&gt; YouGov/Economist, YouGov/Economist, YouGov/Ec…
+## $ pollster.y         &lt;fct&gt; Ipsos, Rasmussen Reports/Pulse Opinion Resear…
+## $ approve.x          &lt;dbl&gt; 37, 37, 37, 37, 37, 37, 37, 37, 37, 40, 40, 4…
+## $ approve_republican &lt;dbl&gt; 17, 17, 17, 17, 17, 17, 17, 17, 17, 31, 31, 3…
+## $ approve_democrat   &lt;dbl&gt; 62, 62, 62, 62, 62, 62, 62, 62, 62, 53, 53, 5…
+## $ adjusted_approve   &lt;dbl&gt; 38.02071, 37.79590, 39.12215, 40.29572, 37.25…</code></pre>
+</div>
+<div id="wrangling" class="section level2">
+<h2>3. Wrangling</h2>
+</div>
+</div>
+<div id="using-the-6-dplyr-functions" class="section level1">
+<h1>Using the 6 dplyr functions:</h1>
+<p>The dplyr functions were first used to create a table called ‘approvals’, which is an overview of the approval ratings including a new variable for the difference between Trump and Mueller’s ratings, called ‘Difference_In_Approval’. For this new variable, a negative difference indicates that Mueller was less popular than Trump at the time, whereas a positive difference indicates when he was more popular. A glimpse is shown below. Exploration of the dataset revealed that Mueller’s approval jumped rapidly up and down, sometimes being greatly favored and other times greatly unfavored, whereas Trump’s approval remained relatively consistent and slightly increased throughout the investigation.</p>
+<p>Secondly, the filter function was used to specifically analyze these variables when CNN conducted the poll. Interestingly, these polls primarily found a large difference in approval rating in favor of Mueller from December 2017 to late 2018.</p>
+<pre class="r"><code>approvals &lt;- polling %&gt;% mutate(Difference_In_Approval=(approve.x-adjusted_approve)) %&gt;% select(end, Mueller_Approval=approve.x, Trump_Approval=adjusted_approve, Difference_In_Approval) 
+
+approvals %&gt;% group_by(end) %&gt;% summarise(mean(Mueller_Approval), mean(Trump_Approval), mean(Difference_In_Approval)) %&gt;% arrange(desc(end))</code></pre>
+<pre><code>## # A tibble: 32 x 4
+##    end        `mean(Mueller_Appro… `mean(Trump_Appro… `mean(Difference_In_…
+##    &lt;date&gt;                    &lt;dbl&gt;              &lt;dbl&gt;                 &lt;dbl&gt;
+##  1 2018-08-12                   47               41.8                  5.17
+##  2 2018-08-07                   35               42.8                 -7.85
+##  3 2018-07-31                   36               41.5                 -5.52
+##  4 2018-07-24                   35               42.1                 -7.08
+##  5 2018-07-14                   36               40.2                 -4.20
+##  6 2018-07-11                   48               41.6                  6.37
+##  7 2018-07-02                   49               42.2                  6.82
+##  8 2018-06-19                   35               43.0                 -7.99
+##  9 2018-06-17                   41               43.4                 -2.42
+## 10 2018-06-12                   34               42.6                 -8.63
+## # … with 22 more rows</code></pre>
+<pre class="r"><code>CNN_approval_comp &lt;- polling %&gt;% filter(pollster.x==&quot;CNN/SSRS&quot;) %&gt;% mutate(Difference_In_Approval=(approve.x-adjusted_approve)) %&gt;% select(end, Mueller_Approval=approve.x, Trump_Approval=adjusted_approve, Difference_In_Approval) 
+
+CNN_approval_comp %&gt;% group_by(end) %&gt;% summarise(mean(Mueller_Approval), mean(Trump_Approval), mean(Difference_In_Approval)) %&gt;% arrange(desc(end))</code></pre>
+<pre><code>## # A tibble: 7 x 4
+##   end        `mean(Mueller_Appro… `mean(Trump_Appro… `mean(Difference_In_A…
+##   &lt;date&gt;                    &lt;dbl&gt;              &lt;dbl&gt;                  &lt;dbl&gt;
+## 1 2018-08-12                   47               41.8                  5.17 
+## 2 2018-06-17                   41               43.4                 -2.42 
+## 3 2018-05-05                   44               43.5                  0.477
+## 4 2018-03-25                   48               40.4                  7.63 
+## 5 2018-02-23                   47               39.4                  7.60 
+## 6 2018-01-18                   47               39.0                  7.99 
+## 7 2017-12-17                   47               35.9                 11.1</code></pre>
+</div>
+<div id="summary-statistics-mean-sd-var-n-quartiles-min-max-n_distinct-etc." class="section level1">
+<h1>Summary Statistics (mean, sd, var, n, quartiles, min, max, n_distinct, etc).:</h1>
+<p>Next, the summary function, the describe function, and the stat.desc function were used to provide tables including the mean, sd, var, n, quartiles, min, max, and n_distinct of the ‘approvals’ dataset.</p>
+<pre class="r"><code>summary(approvals)</code></pre>
+<pre><code>##       end             Mueller_Approval Trump_Approval 
+##  Min.   :2017-07-17   Min.   :34.00    Min.   :34.36  
+##  1st Qu.:2018-01-18   1st Qu.:36.00    1st Qu.:38.69  
+##  Median :2018-03-25   Median :39.00    Median :40.85  
+##  Mean   :2018-03-21   Mean   :41.72    Mean   :40.66  
+##  3rd Qu.:2018-06-17   3rd Qu.:47.00    3rd Qu.:42.80  
+##  Max.   :2018-08-12   Max.   :58.00    Max.   :46.90  
+##  Difference_In_Approval
+##  Min.   :-11.095       
+##  1st Qu.: -4.796       
+##  Median : -1.071       
+##  Mean   :  1.061       
+##  3rd Qu.:  6.295       
+##  Max.   : 22.245</code></pre>
+<pre class="r"><code>describe(approvals)</code></pre>
+<pre><code>## approvals 
+## 
+##  4  Variables      344  Observations
+## ---------------------------------------------------------------------------
+## end 
+##        n  missing distinct 
+##      344        0       32 
+## 
+## lowest : 2017-07-17 2017-07-24 2017-10-31 2017-11-01 2017-12-02
+## highest: 2018-07-14 2018-07-24 2018-07-31 2018-08-07 2018-08-12
+## ---------------------------------------------------------------------------
+## Mueller_Approval 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+##      344        0       16    0.993    41.72    7.497       34       35 
+##      .25      .50      .75      .90      .95 
+##       36       39       47       50       55 
+##                                                                       
+## Value         34    35    36    37    38    39    40    41    44    45
+## Frequency     24    34    44    39    21    24    11    16     8    11
+## Proportion 0.070 0.099 0.128 0.113 0.061 0.070 0.032 0.047 0.023 0.032
+##                                               
+## Value         47    48    49    50    55    58
+## Frequency     34    25    11    11    14    17
+## Proportion 0.099 0.073 0.032 0.032 0.041 0.049
+## ---------------------------------------------------------------------------
+## Trump_Approval 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+##      344        0      217        1    40.66    3.137    36.15    36.80 
+##      .25      .50      .75      .90      .95 
+##    38.69    40.85    42.80    44.10    44.80 
+## 
+## lowest : 34.35515 34.37141 34.65515 35.12070 35.12215
+## highest: 46.13181 46.42070 46.50246 46.72021 46.90246
+## ---------------------------------------------------------------------------
+## Difference_In_Approval 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+##      344        0      276        1    1.061    8.684   -8.788   -7.795 
+##      .25      .50      .75      .90      .95 
+##   -4.796   -1.071    6.295   11.759   16.530 
+## 
+## lowest : -11.09540 -10.80223 -10.69575 -10.26463 -10.15936
+## highest:  20.43597  20.85320  21.47929  21.59754  22.24485
+## ---------------------------------------------------------------------------</code></pre>
+<pre class="r"><code>stat.desc(approvals)</code></pre>
+<pre><code>##                       end Mueller_Approval Trump_Approval
+## nbr.val      3.440000e+02     3.440000e+02   3.440000e+02
+## nbr.null     0.000000e+00     0.000000e+00   0.000000e+00
+## nbr.na       0.000000e+00     0.000000e+00   0.000000e+00
+## min          1.736400e+04     3.400000e+01   3.435515e+01
+## max          1.775500e+04     5.800000e+01   4.690246e+01
+## range        3.910000e+02     2.400000e+01   1.254731e+01
+## sum          6.058463e+06     1.435300e+04   1.398809e+04
+## median       1.761500e+04     3.900000e+01   4.085246e+01
+## mean         1.761181e+04     4.172384e+01   4.066307e+01
+## SE.mean      5.619990e+00     3.704082e-01   1.476653e-01
+## CI.mean.0.95 1.105398e+01     7.285574e-01   2.904435e-01
+## var          1.086499e+04     4.719756e+01   7.500931e+00
+## std.dev      1.042353e+02     6.870048e+00   2.738783e+00
+## coef.var     5.918487e-03     1.646552e-01   6.735308e-02
+##              Difference_In_Approval
+## nbr.val                 344.0000000
+## nbr.null                  0.0000000
+## nbr.na                    0.0000000
+## min                     -11.0954000
+## max                      22.2448500
+## range                    33.3402500
+## sum                     364.9050600
+## median                   -1.0714300
+## mean                      1.0607705
+## SE.mean                   0.4190261
+## CI.mean.0.95              0.8241843
+## var                      60.4005136
+## std.dev                   7.7717767
+## coef.var                  7.3265391</code></pre>
+</div>
+<div id="comparisons-grouped-by-categorical-variables" class="section level1">
+<h1>Comparisons Grouped by Categorical Variables:</h1>
+<p>Lastly, two comparitive analyses were performed by summarizing the means of this data when separated by categorical variables. The first table shows Mueller’s approval percentage separated by both sample size and party. The second shows Mueller and Trump’s approval ratings when grouped by date of the poll.</p>
+</div>
+<div id="average-mueller-approval-percentage-grouped-by-sample-size-and-party" class="section level1">
+<h1>Average Mueller Approval Percentage Grouped by Sample Size and Party</h1>
+<pre class="r"><code>library(ggplot2)
+
+
+polling %&gt;% group_by(sample_size.x) %&gt;% summarise(., Avg_Democrat_Mueller_Approval=mean(approve_democrat), Avg_Republican_Mueller_Approval=mean(approve_republican)) %&gt;% arrange(desc(sample_size.x))</code></pre>
+<pre><code>## # A tibble: 13 x 3
+##    sample_size.x Avg_Democrat_Mueller_Approv… Avg_Republican_Mueller_Appro…
+##            &lt;dbl&gt;                        &lt;dbl&gt;                         &lt;dbl&gt;
+##  1          3981                         53                            31  
+##  2          1994                         62                            35  
+##  3          1500                         62.2                          17.5
+##  4          1473                         76                            20  
+##  5          1016                         66                            28  
+##  6          1015                         64                            17  
+##  7          1014                         69                            29  
+##  8          1012                         62                            20  
+##  9          1007                         72                            25  
+## 10          1005                         73.2                          31.8
+## 11          1002                         72                            22  
+## 12          1001                         75.2                          26.3
+## 13          1000                         62.4                          21.3</code></pre>
+<div id="average-trump-and-mueller-approval-percentage-grouped-by-date-of-poll" class="section level2">
+<h2>Average Trump and Mueller Approval Percentage Grouped by Date of Poll</h2>
+<pre class="r"><code>approvals %&gt;% group_by(end) %&gt;% summarise(., Avg_Mueller_Approval=mean(Mueller_Approval), Avg_Trump_Approval=mean(Trump_Approval), Difference_In_Avg_Approval=(mean(Mueller_Approval)-mean(Trump_Approval))) %&gt;% arrange(desc(end))</code></pre>
+<pre><code>## # A tibble: 32 x 4
+##    end        Avg_Mueller_Approv… Avg_Trump_Approval Difference_In_Avg_App…
+##    &lt;date&gt;                   &lt;dbl&gt;              &lt;dbl&gt;                  &lt;dbl&gt;
+##  1 2018-08-12                  47               41.8                   5.17
+##  2 2018-08-07                  35               42.8                  -7.85
+##  3 2018-07-31                  36               41.5                  -5.52
+##  4 2018-07-24                  35               42.1                  -7.08
+##  5 2018-07-14                  36               40.2                  -4.20
+##  6 2018-07-11                  48               41.6                   6.37
+##  7 2018-07-02                  49               42.2                   6.82
+##  8 2018-06-19                  35               43.0                  -7.99
+##  9 2018-06-17                  41               43.4                  -2.42
+## 10 2018-06-12                  34               42.6                  -8.63
+## # … with 22 more rows</code></pre>
+</div>
+</div>
+<div id="visualizing" class="section level1">
+<h1>4. Visualizing</h1>
+<p>The first graph that was made to further analyze the dataset was a bar graph for Trump’s approval rating, separated by Pollster and filled by the weight (historical accuracy assigned by fivethirtyeight) of each Pollster. This graph was intended to investigate whether some of the Pollsters were biased either toward or against Trump. Interestingly, as shown below, some of Trump’s highest approval ratings were given by Fox News, a historically conservative media platform, McLaughlin &amp; Associates, a conservative firm that Trump had previously hired during his campaign, and the America First Policies, a non-profit which was created to support Trump’s “America First” agenda. These Pollsters received mediocre to poor weight assessments, perhaps suggesting that they are more prone to bias. On the other hand, the Pollsters with historically liberal ties were much more varied. US News had an average approval rating around 37%, whereas the Washington Post had a much more favorable approval rating of about 43% for Trump, both of which had rather good weight scores.</p>
+<pre class="r"><code>polling %&gt;% group_by(pollster.y) %&gt;%
+  summarise(Average_Trump_Approval=mean(adjusted_approve), Weight_of_Poll=mean(weight)) %&gt;%  
+  ggplot(aes(x=pollster.y, y=Average_Trump_Approval, fill=Weight_of_Poll))+ geom_bar(stat=&quot;summary&quot;)+ theme(axis.text.x = element_text(angle=60, hjust=1),)+ xlab(&quot;Pollster&quot;)+ ggtitle(&quot;Trump&#39;s Average Approval Rating by Pollster and their Weight&quot;) + ylab(&quot;Approval %&quot;)</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>In the second graph, the approval ratings of Trump and Mueller throughout the investigation were visualized. As expected, Mueller’s approval rating greatly varied throughout, whereas Trump’s remained relatively consistent other than a slight dip in late 2017. I suspect that this is due to the allegiance to the party for many Republicans. However, I found it very interesting that when Trump’s approval rating slightly decreased in late 2017, Mueller’s approval rapidly shot up to its maximum of 58. This coincided with many significant events in the investigation, such as the indictment of Trump’s campaign manager Paul Manafort for his conspiracy against the United States and intent to launder money, and Trump’s refusal to disclose his tax returns. Nonetheless, the graph illustrates that the favor of Mueller was shortlived, as his approval often dipped lower than Trump’s, especially towards the end of the investigation when it failed to charge the president with a crime.</p>
+<pre class="r"><code>polling %&gt;% group_by(end) %&gt;% summarise(Average_Trump_Approval=mean(adjusted_approve), Average_Mueller_Approval=mean(approve.x)) %&gt;%
+  ggplot()+ geom_line(aes(x=end, y=Average_Mueller_Approval), color=&quot;black&quot;) + geom_line(aes(x=end, y=Average_Trump_Approval), color=&quot;red&quot;)+ ylab(&quot;Approval Rating&quot;) + xlab(&quot;Date of Poll&quot;)+ ggtitle(&quot;Approval Ratings of Mueller (Black) and Trump (Red) throughout the Mueller Investigation&quot;) + theme_grey()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-8-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="dimensionality-reduction" class="section level1">
+<h1>5. Dimensionality Reduction</h1>
+<p>PAM analysis was performed on the polling dataset, including 3 clusters of data. A table with further information is provided.</p>
+<pre class="r"><code>library(cluster)
+pam1&lt;-polling %&gt;% pam(k=3)
+pamclust&lt;-polling %&gt;% mutate(cluster=as.factor(pam1$clustering)) 
+
+pamclust %&gt;% ggplot(aes(approve.x,adjusted_approve,color=cluster))+geom_point()+ ylab(&quot;Trump&#39;s Approval Rating&quot;)+xlab(&quot;Mueller&#39;s Approval Rating&quot;)+ggtitle(&quot;PAM Cluster Analysis of Trump vs. Mueller Approval Ratings&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>polling[pam1$id.med,]</code></pre>
+<pre><code>## # A tibble: 3 x 9
+##   end        sample_size.x weight pollster.x pollster.y approve.x
+##   &lt;date&gt;             &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;      &lt;fct&gt;          &lt;dbl&gt;
+## 1 2018-05-08          1500 0.136  YouGov/Ec… Rasmussen…        36
+## 2 2017-07-24          3981 0.0160 Morning C… Ipsos             40
+## 3 2018-03-25          1014 0.263  CNN/SSRS   Ipsos             48
+## # … with 3 more variables: approve_republican &lt;dbl&gt;,
+## #   approve_democrat &lt;dbl&gt;, adjusted_approve &lt;dbl&gt;</code></pre>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

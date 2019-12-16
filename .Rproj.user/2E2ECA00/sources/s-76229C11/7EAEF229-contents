@@ -1,0 +1,80 @@
+---
+title: 'Python: Defining Commands'
+author: Soren Cobb
+date: '2019-12-15'
+slug: python-defining-commands
+categories: []
+tags: []
+description: ''
+---
+
+```{r setup, include=FALSE, echo=TRUE}
+library(reticulate)
+use_python("/usr/bin/python")
+
+```
+
+An aspect of python that I have really enjoyed using is the ease of defining new commands and using them to solve complex problems on a variety of objects such as FASTA sequences, strings, and numerics. In R, we largely relied on pipes or pre-built libarires of functions for data manipulations, which I felt made solving problems a bit more segmented, making each step a new function or path. An example of this is shown in a snapshot from an early R homework assignment:
+
+![](/blog/2019-12-15-python-defining-commands_files/a.png)
+
+On the other hand, a few examples of new commands in python that quickly found comprehensive solutions are listed and explained below to illustrate how python can be used to reduce complex tasks to just a few lines of code: 
+
+
+In the example below, the task was to convert a lowercased string8 with punctuation removed to a dictionary of how many times each word appeared. This was done by defining a command titled "count_chars" which creates an object called counts and uses a loop in which every word of the input is scanned, adding +1 to the count for each time a word had already appeared. The function finally displays the resulting dictionary. In R, I suspect this would've taken much more code and effort.
+
+
+```{python}
+
+string8="Call me Ishmael. Some years ago — never mind how long precisely — having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen, and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off — then, I account it high time to get to sea as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the ship. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the ocean with me."
+
+import re
+
+def count_chars(sentence):      #argument will be string object
+    counts = {}                #new dict
+    for c in sentence:     #for each character in sentence
+        if c in counts:    #have we seen it before in this sentence?
+            counts[c]+=1   #if yes, increase count by 1
+        else:
+            counts[c]=1    #otherwise, set count
+            
+    for c in counts:
+        print(c, "appears", counts[c],"times")
+
+nopunc = re.sub(r"[.—,;']+","",string8)
+words = re.split(r" ",nopunc)
+
+lowercase = nopunc.lower()
+lowercwords = re.split(r" ",lowercase)
+
+count_chars(lowercwords)
+
+```
+
+
+Another great example is illustrated by a recent example from HW12 in which we were provided two sequences and asked to count the amount of possible threemers (combinations of 3 consecutive characters) in two different DNA sequences, which represent possible codons. This was achieved by building a function called "count_threemers" that creates a dictionary called count and scans each 3 consecutive characters and adds a +1 if it has already appeared in the sequence. The dictionary is then returned, and the result is a dictionary with each possible threemer and a count of how many times it appears in each sequence. 
+
+```{python}
+import re
+
+my_seq1 = "ATCATCATG"
+my_seq2 = "CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT"
+
+# Your code goes here
+
+    
+def count_threemers(sequence):
+    count = {}
+    num_threemers = len(sequence) - 3 + 1
+    for i in range(num_threemers):
+        threemer = sequence[i:i+3]
+        if threemer not in count:
+            count[threemer] = 0
+        count[threemer] += 1
+    return count
+
+        
+
+count_threemers(my_seq1)
+count_threemers(my_seq2)
+```

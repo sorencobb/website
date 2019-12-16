@@ -1,0 +1,10 @@
+<section id="resume">
+  <div class="container">
+    <h3>{{ .Site.Data.projects.name }}</h3>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <a href="/353f1712-1fac-11ea-a5fd-0cc47a792c0a_id_353f1712-1fac-11ea-a5fd-0cc47a792c0a.html">resume</a>
+      </div>
+    </div>
+  </div>
+</section>

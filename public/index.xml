@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chris Turner</title>
+    <link>/</link>
+    <description>Recent content on Chris Turner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python: Defining Commands</title>
+      <link>/blog/python-defining-commands/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python-defining-commands/</guid>
+      <description>An aspect of python that I have really enjoyed using is the ease of defining new commands and using them to solve complex problems on a variety of objects such as FASTA sequences, strings, and numerics. In R, we largely relied on pipes or pre-built libarires of functions for data manipulations, which I felt made solving problems a bit more segmented, making each step a new function or path. An example of this is shown in a snapshot from an early R homework assignment:</description>
+    </item>
+    
+    <item>
+      <title>Python: Defining Commands</title>
+      <link>/2019/12/15/python-defining-commands/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/12/15/python-defining-commands/</guid>
+      <description>Yo yoy yo
+library(reticulate) ## Warning: package &amp;#39;reticulate&amp;#39; was built under R version 3.5.2 print(&amp;quot;Yo yoy yo&amp;quot;) ## [1] &amp;quot;Yo yoy yo&amp;quot; library(reticulate)</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects I have been working on:
+  Project 1
+  Project 2
+  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>title: “Project 2: Approval Ratings During The Mueller Investigation” output: html_document: df_print: paged —
+Soren Cobb, scc2734 0. Introduction: I chose to conduct this modeling project on a dataset called SLID within the ‘carData’ package. SLID is an abbreviation for the Survey of Labour and Income Dynamics; this package contains data from the “1994 wave” of this survey in Ontario, Canada. The variables it contains are:
+Wages - hourly wage in USD</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Approval Ratings During The Mueller Investigation</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>Soren Cobb, scc2734 install.packages(“fivethirtyeight”) install.packages(“Hmisc”) install.packages(“pastecs”)
+0. Introduction: I chose to conduct this exploratory data analysis on two datasets provided by the ‘fivethirteight’ package that include statistics on the approval ratings of both President Donald Trump, and special prosecutor Robert Mueller during the Special Counsel investigation of Russia’s alleged interference with the 2016 presidential election. Due to its fascinating scope and signifance in U.S. government and politics, this is a story that I have been following closely since 2017 and I was intrigued to analyze how the public’s perception of both Trump and Mueller shifted throughout the investigation.</description>
+    </item>
+    
+  </channel>
+</rss>

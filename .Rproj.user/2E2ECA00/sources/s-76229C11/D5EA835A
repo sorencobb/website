@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576450870067.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D5EA835A",
+    "lastKnownWriteTime" : 1576455118,
+    "last_content_update" : 1576455118854,
+    "path" : "~/Desktop/website/Untitled.R",
+    "project_path" : "Untitled.R",
+    "properties" : {
+        "cursorPosition" : "7,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

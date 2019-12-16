@@ -1,0 +1,177 @@
+---
+title: "HW 4"
+author: "SDS348 Fall 2019"
+date: "9/30/19"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r global_options, include=FALSE}
+# DO NOT DELETE THIS CHUNK!
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, message=FALSE, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
+## Soren Cobb, scc2734
+
+**This homework is due on Sep 29, 2019 at 11:59pm. Please submit as a pdf file on Canvas.**
+
+*For all questions, include the R commands/functions that you used to find your answer. Answers without supporting code will not receive credit.*
+
+> ### How to submit this assignment
+>All homework assignments will be completed using R Markdown. These `.Rmd` files consist of >text/syntax (formatted using Markdown) alongside embedded R code. 
+>When you have completed the assignment (by adding R code inside codeblocks and supporting text outside of the codeblocks), create your document as follows:
+
+> - Click the "Knit" button (above) to create an .html file
+> - Open the html file in your internet browser to view
+> - Go to `File > Print` and print your .html file to a .pdf
+> - (or knit to PDF)
+> - Upload the .pdf file to Canvas
+
+---
+
+### Question 1:
+
+##### Load the package nycflights13 with library(nycflights13). If you are on running R Studio locally, you must install this package before you can use it! 
+
+##### Run the included code chunk below to save flights and airports to your environment.
+
+```{R}
+# 
+
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+
+data(flights)
+data(airports)
+data(airlines)
+nrow(flights)
+```
+
+##### Explore the `flights` dataset (e.g., run `glimpse(flights)` read the description of each variable in the help by running `?flights`). How many observations are there (that's how many flights left the three big NYC airports in 2013)!
+
+336,776 observations
+
+##### (a) (2 pts) Report the number and proportion of NAs for each variable using summarize_all() and/or mutate_all(). Ideally, you will write your own short function to count NAs by summing a logical and apply it to every column via `summarize_all`, but there are ways that don't involve creating a new function
+
+```{R}
+#your code here
+
+glimpse(flights)
+?flights
+
+
+##### Number of NAs:
+
+flights %>% summarize_all(function(x)sum(is.na(x)))
+
+
+##### Proportion of NAs:
+
+flights %>% summarize_all(function(y)(sum(is.na(y)))/nrow(flights))
+```
+
+
+##### (b) (2 pts) Remove all rows containing NAs from the dataset (**for the rest of the assignment, we will be using only the complete rows, so overwrite the `flights` dataset or save it as a new object and use it in place of `flights` for the rest of the assignment**). Now, using filter, what airport `dest`ination (three-letter code fine) has the longest `air_time`? 
+
+```{R}
+#your code here
+
+flights_noNA<- flights %>% na.omit
+
+flights_noNA %>% arrange(desc(air_time))
+
+
+
+```
+
+HNL with 695 minutes.
+
+##### (c) (4 pts) Find the mean, standard deviation, count, and standard error of `distance` in each month of each year (average across `day`) for flights from the three different New York airports (`origin`). You will use your sd and count to fine your se ($sd/\sqrt{count}$). Rename your summary variables inside of `summarize()`. 
+
+```{R}
+#your code here
+
+flights_noNA %>% group_by(origin, year, month) %>%
+  summarize(Mean_Distance=mean(distance), Standard_Deviation_of_Distance=sd(distance), Count_Of_Flights=n(), Standard_Error_of_Mean_Distance=(sd(distance)/(sqrt(n()))))
+
+
+
+
+```
+
+##### (d) (4 pts) Using your results from part (c), make a barplot of mean distance for each month using `ggplot()`. Add manual standard error bars using geom_errorbar() by specifying `aes(x=month, y=your_mean, ymin=your_mean-your_se, ymax=your_mean+your_se)`. Facet (or equivalent) by `origin` and provide labels/ticks on the x-axis for each month. Write a bit about what you see!
+
+```{R}
+#your code here
+
+flights_noNA %>% group_by(origin, year, month) %>%
+  summarize(Mean_Distance=mean(distance), Standard_Deviation_of_Distance=sd(distance), Count_Of_Flights=n(), Standard_Error_of_Mean_Distance=(sd(distance)/(sqrt(n())))) %>%
+  ggplot(aes(month,Mean_Distance))+ geom_bar(stat="identity")+ geom_errorbar(aes(x=month, y=Mean_Distance, ymin=Mean_Distance-Standard_Error_of_Mean_Distance, ymax=Mean_Distance+Standard_Error_of_Mean_Distance))+ facet_wrap(~origin)+ scale_x_continuous(breaks=seq(1,12,1))
+
+```
+
+
+*Your answer here; 1-2 sentences*
+
+The JFK airport consistently had the highest mean distance of flights originating from this airport, hovering around 1300 miles, whereas the LGA airport had consistantly the lowest mean distance, with all 12 months around 780 miles. The EWR airport had the most variance in mean distance by month, with some months approaching 1150 miles, and others being below 1000.
+
+### Question 2 (2 pts)
+
+Let's do some joining! The dataset `airlines` contains the full name of the carrier (examine it!). Join the dataset with the flights dataset so all of the information in `flights` is retained. Using the merged dataset, which carrier (`name`) has the longest average departure delay? Which has the shortest?
+
+```{R}
+#your code here
+
+flights_noNA %>% full_join(airlines, by="carrier") %>% group_by(name) %>% summarize(mean(dep_delay))
+```
+
+
+*Your answer here; 1-2 sentences*
+
+Frontier Airlines has the longest average departure delay, 20.201175 minutes, whereas US Airways has the shortest average departure delay, 3.744693 minutes.
+
+
+### Question 3 
+
+
+#### (a) (4 pts) Look at the dataset called `airports`. How many rows does it have? Using `%in%` with `sum()` or `mean()` (or using a join), how many of these airports (variable `faa`) appear in the `flights` dataset as destinations (after removing NA rows from the flights dataset, above)? How many unique destination airports are there in the flights dataset? Which destination airports are in the `flights` dataset but missing from the `airports` dataset? Google those airport codes: what do they have in common?
+
+```{R}
+#your code here
+
+nrow(airports)
+
+semi_join(airports, flights_noNA, by=c("faa"="dest"))  
+
+length(unique(flights_noNA$dest))
+
+anti_join(flights_noNA, airports, by=c("dest"="faa")) 
+
+```
+
+*Your answer here*
+
+There are 1458 rows in the 'airports' dataset. Of these, 100 different airports appear in the 'flights' dataset (with NAs removed) as destinations. The 'flights' dataset contains 104 unique destination airports, meaning that 4 of these airports are not inclueded in the 'airports' dataset: BQN, SJU, STT, and PSE. These airports are all either in Puerto Rico or the U.S. Virgin Islands (STT), which are unincorporated U.S. territories.
+
+The airports dataset has 1458 rows.
+
+#### (b) (2 pts) Do a join that results in a dataset that contains only the rows with matches (i.e., none of the airports not appearing in `flights`, none of the destinations not appearing in `airports`). Call `glimpse()` on this final dataset (please don't print the whole thing out).
+
+```{R}
+#your code here
+
+merged = flights_noNA %>% inner_join(airports, by=c("dest"="faa")) 
+
+glimpse(merged)
+
+```
+
+```{R, echo=F}
+## DO NOT DELETE THIS BLOCK!
+sessionInfo()
+Sys.time()
+Sys.info()
+```

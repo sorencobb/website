@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576452391865.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "823E6B2B",
+    "lastKnownWriteTime" : 1576451618,
+    "last_content_update" : 1576451618,
+    "path" : "~/Desktop/website/data/projects.yml",
+    "project_path" : "data/projects.yml",
+    "properties" : {
+        "cursorPosition" : "17,6",
+        "scrollLine" : "1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "yaml"
+}

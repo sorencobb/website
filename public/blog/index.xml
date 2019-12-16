@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Chris Turner</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Chris Turner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python: Defining Commands</title>
+      <link>/blog/python-defining-commands/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python-defining-commands/</guid>
+      <description>An aspect of python that I have really enjoyed using is the ease of defining new commands and using them to solve complex problems on a variety of objects such as FASTA sequences, strings, and numerics. In R, we largely relied on pipes or pre-built libarires of functions for data manipulations, which I felt made solving problems a bit more segmented, making each step a new function or path. An example of this is shown in a snapshot from an early R homework assignment:</description>
+    </item>
+    
+  </channel>
+</rss>

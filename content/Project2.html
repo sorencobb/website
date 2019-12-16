@@ -1,0 +1,297 @@
+
+
+
+<p>title: “Project 2: Approval Ratings During The Mueller Investigation” output: html_document: df_print: paged —</p>
+<div id="soren-cobb-scc2734" class="section level1">
+<h1>Soren Cobb, scc2734</h1>
+<div id="introduction" class="section level2">
+<h2>0. Introduction:</h2>
+<p>I chose to conduct this modeling project on a dataset called SLID within the ‘carData’ package. SLID is an abbreviation for the Survey of Labour and Income Dynamics; this package contains data from the “1994 wave” of this survey in Ontario, Canada. The variables it contains are:</p>
+<p>Wages - hourly wage in USD</p>
+<p>Education - years of schooling</p>
+<p>Age - in years</p>
+<p>Sex - Male or Female</p>
+<p>Language - English, French, or Other</p>
+<p>I was drawn to this dataset because I thought it would be interesting to explore how demographic factors can be associated with measures such as pay and schooling.</p>
+</div>
+<div id="manovaanovaspost-hocs" class="section level2">
+<h2>1. MANOVA/ANOVAs/Post-hocs</h2>
+<p>We began with MANOVA testing of wages, education and age by language and subsequently conducted ANOVAs for the significant language associations. Post-hoc t-tests were also performed to determine which of the languages differed for each variable:</p>
+<pre class="r"><code>SLID1&lt;-SLID%&gt;%na.omit()
+
+man&lt;-manova(cbind(wages, education, age)~language,data=SLID1)
+summary(man)</code></pre>
+<pre><code>##             Df   Pillai approx F num Df den Df    Pr(&gt;F)    
+## language     2 0.022144   14.864      6   7966 &lt; 2.2e-16 ***
+## Residuals 3984                                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(SLID1$wages~SLID1$language))</code></pre>
+<pre><code>##                  Df Sum Sq Mean Sq F value Pr(&gt;F)
+## SLID1$language    2     70   34.76   0.561  0.571
+## Residuals      3984 246721   61.93</code></pre>
+<pre class="r"><code>summary(aov(SLID1$education~SLID1$language))</code></pre>
+<pre><code>##                  Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## SLID1$language    2    387  193.56   21.18 7.06e-10 ***
+## Residuals      3984  36405    9.14                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(SLID1$age~SLID1$language))</code></pre>
+<pre><code>##                  Df Sum Sq Mean Sq F value  Pr(&gt;F)    
+## SLID1$language    2   8132    4066   27.98 8.6e-13 ***
+## Residuals      3984 579054     145                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>pairwise.t.test(SLID1$wages,SLID1$language,p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  SLID1$wages and SLID1$language 
+## 
+##        English French
+## French 0.99    -     
+## Other  0.29    0.51  
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(SLID1$education,SLID1$language,p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  SLID1$education and SLID1$language 
+## 
+##        English French
+## French 0.0099  -     
+## Other  6.2e-10 0.0783
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(SLID1$age,SLID1$language,p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  SLID1$age and SLID1$language 
+## 
+##        English French 
+## French 0.10158 -      
+## Other  1.4e-13 0.00089
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>type1errorRate&lt;-1-(.95)^13
+type1errorRate</code></pre>
+<pre><code>## [1] 0.4866579</code></pre>
+<pre class="r"><code>bonferroni_adjpvalue &lt;- 0.05/13
+bonferroni_adjpvalue</code></pre>
+<pre><code>## [1] 0.003846154</code></pre>
+<p><em>Write-up:</em></p>
+<p>The MANOVA testing provided a p-value of 2.2e-16 ***, meaning that some of the numeric variables show a mean difference between language groups. Upon further investigation (ANOVA for each variable by language), only the mean differences in eduacation level and age differs amongst language groups. The pairwise t-test shows that for education level, English and Fresh speakers have a significant mean difference, with a p-value of 0.0099, as well as English and Other speakers with a p-value of 6.2e-10. As for age, French and Other speakers have a significant mean difference with a p-value of 0.00089, as well as English and Other with a p-value of 1.4e-13. In total, 1 MANOVA was performed, 3 ANOVAS (one for each variable) and 9 t-tests (pairwise for each 3 language groups by each 3 variables) for a total of 13 tests. The type 1 error rate was thus 1-(.95)^13, or 0.4866579. To correct for this very high rate of making at least one error, the bonferroni method was used to adjust the p-value to 0.05/13, or 0.003846154. With this new p-value, the mean difference in education level between French and English speakers was no longer significant, but all other previously significant associations remained.</p>
+</div>
+<div id="randomization-test-standard-deviations-of-genders" class="section level2">
+<h2>2. Randomization test (standard deviations of genders)</h2>
+<pre class="r"><code>SLID1%&gt;%group_by(sex)%&gt;%dplyr::summarize(s=sd(wages))%&gt;%dplyr::summarize(diff(s))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `diff(s)`
+##       &lt;dbl&gt;
+## 1      1.10</code></pre>
+<pre class="r"><code>set.seed(348)
+
+rand_dist&lt;-vector()
+for(i in 1:5000){
+new&lt;-data.frame(wages=sample(SLID1$wages),gender=SLID1$sex)
+rand_dist[i]&lt;-sd(new[new$gender==&quot;Male&quot;,]$wages)-
+              sd(new[new$gender==&quot;Female&quot;,]$wages)
+}
+mean(rand_dist&gt; 1.095003)*2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>{hist(rand_dist,main=&quot;Comparing Null Distribution and T-Statistic&quot;,ylab=&quot;Iterations&quot;, xlab=&quot;Random Difference in sd&quot;, xlim=c(-1.1,1.1)); abline(v = 1.095003,col=&quot;red&quot;)}</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em>Write-up:</em></p>
+<p>A randomization test on the standard deviations in wages between males and females was performed. The null hypothesis states that there is not a significant difference in standard deviations, whereas the alternative hypothesis states that there is a significant difference. To test this, the difference in standard deviations was calculated as 1.095003. Then, using a random sampling of wages with gender randomly assigned, a null distribution was built. The function: mean(rand_dist&gt; 1.095003)*2 was used to calculate a p-value that was so small that it was rounded to 0. To check this, a graph of the null distribution and t-statistic was made, which shows that a difference of 1.095003 falls well outside the range of acceptable test statistics, thus rejecting the null hypothesis and concluding that there is a significant difference in standard deviations of wages between males and females.</p>
+</div>
+<div id="linear-regression-model-predicting-wages" class="section level2">
+<h2>3. Linear regression model predicting wages</h2>
+<pre class="r"><code>library(sandwich)</code></pre>
+<pre><code>## Warning: package &#39;sandwich&#39; was built under R version 3.5.2</code></pre>
+<pre class="r"><code>library(lmtest)</code></pre>
+<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 3.5.2</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## Warning: package &#39;zoo&#39; was built under R version 3.5.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>SLID3&lt;-SLID1%&gt;%mutate(education_c=(education-mean(education)))
+linreg&lt;-lm(wages~education_c * sex, data=SLID3)
+summary(linreg)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = wages ~ education_c * sex, data = SLID3)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -19.071  -5.157  -0.807   3.954  32.187 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         13.77828    0.16281  84.626   &lt;2e-16 ***
+## education_c          0.89047    0.05583  15.950   &lt;2e-16 ***
+## sexMale              3.52213    0.23068  15.268   &lt;2e-16 ***
+## education_c:sexMale -0.15501    0.07615  -2.036   0.0419 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.281 on 3983 degrees of freedom
+## Multiple R-squared:  0.1445, Adjusted R-squared:  0.1439 
+## F-statistic: 224.3 on 3 and 3983 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>mean(SLID3$education)</code></pre>
+<pre><code>## [1] 13.33705</code></pre>
+<pre class="r"><code>ggplot(aes(x = education_c, y = wages, color = sex), data = SLID3) +geom_point()+
+  stat_smooth(method = &quot;lm&quot;, se = FALSE, fullrange = TRUE) +xlab(&quot;Years of Education (Centered by Mean)&quot;) +ylab(&quot;Hourly Wage (USD)&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Normality
+resids&lt;-linreg$residuals
+fitvals&lt;-linreg$fitted.values
+shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.9586, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code># Linearity &amp; Homoskedasticity
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>coeftest(linreg, vcov=vcovHC(linreg))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         13.778283   0.147166 93.6243  &lt; 2e-16 ***
+## education_c          0.890473   0.056598 15.7332  &lt; 2e-16 ***
+## sexMale              3.522127   0.230947 15.2508  &lt; 2e-16 ***
+## education_c:sexMale -0.155013   0.083241 -1.8622  0.06265 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><em>Write-UP:</em></p>
+<p>A linear regression model was built to predict the hourly wages based on the centered education variable, gender, and its interaction. The intercept estimate is 13.77828, meaning that a female (control group) with average education level, 13.33705 years, is predicted to have an hourly wage of $13.78. For every additional year of education above the mean, hourly wages is predicted to increase by 0.89047. Furthermore, males are predicted to have an increase in wages of 3.52213 per hour. However, the interaction between males and education_c has a coefficient of -0.15501, meaning that hourly wages for males only increases by 0.73546 (0.89047-0.15501) rather than 0.89047 for each additional year of education above the mean.</p>
+<p>The linear regression model was plotted above using ggplot with points for the real data and linear lines for predicted values. The assumptions for normality, linearity, and homoskedasticity were then checked. A shapiro test concluded that the data is not normally distributed with a p-value of &lt; 2.2e-16. A residual plot was then produced to graphically test the linearity and homoskedasticitiy assumptions. While it appears to be linear, the graph fans out to the right and upward, suggesting that the data is heteroskedastic.</p>
+<p>As a result, the regression results were recomputed with robust standard errors using the vcov=vcovHC function. This increased the standard errors of the education_c and sex predictors, as well as its interaction. As a result, both the t-statistic and p-values increased for these predictors. While the education_c and sex predictors remained significant, the p-value of the interaction predictor increased from 0.0419 to 0.06265, meaning that this predictor was no longer below 0.05 and was therefore not signficant.</p>
+<p>Lastly, the summary of the regression model provided an adjusted R-squared value of 0.1439. This means that it is estimated that 14.39% of the variance in outcomes is explained by the model.</p>
+</div>
+<div id="bootstrapping" class="section level2">
+<h2>4. Bootstrapping</h2>
+<pre class="r"><code>boot_dat&lt;-SLID3[sample(nrow(SLID3),replace=TRUE),]
+
+samp_distn&lt;-replicate(5000, {
+  boot_dat&lt;-SLID3[sample(nrow(SLID3),replace=TRUE),]
+  fit0&lt;-lm(wages~education_c * sex,data=boot_dat)
+  coef(fit0)
+})
+
+## Estimated SEs
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) education_c   sexMale education_c:sexMale
+## 1   0.1444889  0.05600701 0.2248347          0.08295182</code></pre>
+<p>The bootstrapped standard errors of the regression model with interaction were very similar to the robust standard errors with slight increases for all except the SE for the interaction of sex and education, which was slightly lower. The decrease was very slight and thus would be unlikely to make the interaction significant. Likewise to the robust standard errors, the bootstrapped standard errors had considerable increases for all SEs of predictors when compared to the original model.</p>
+</div>
+<div id="predicting-binary-categorical-variable-top-20-wage-earner" class="section level2">
+<h2>5. Predicting Binary Categorical Variable (Top 20% Wage Earner)</h2>
+<pre class="r"><code>library(ggplot2)
+
+wages1&lt;-SLID3$wages
+quantile(wages1, c(.85))</code></pre>
+<pre><code>##    85% 
+## 23.792</code></pre>
+<pre class="r"><code>SLID4 &lt;- SLID3 %&gt;% mutate(Top20percIncome=ifelse(wages&gt;=(quantile(wages1, c(.80))),&quot;Yes&quot;,&quot;No&quot;)) %&gt;% mutate(age_c=age-mean(age)) %&gt;% mutate(top=ifelse(wages&gt;=(quantile(wages1, c(.80))),1,0))
+
+
+fit00&lt;-glm(top~sex+education_c+age_c,data=SLID4,family=binomial(link=&quot;logit&quot;))
+coeftest(fit00)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##               Estimate Std. Error z value  Pr(&gt;|z|)    
+## (Intercept) -2.1803636  0.0752310 -28.982 &lt; 2.2e-16 ***
+## sexMale      0.9250467  0.0900827  10.269 &lt; 2.2e-16 ***
+## education_c  0.2907678  0.0155250  18.729 &lt; 2.2e-16 ***
+## age_c        0.0656031  0.0039913  16.437 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><em>Write-UP:</em></p>
+<p>For this model, I wanted to predict the top 20% wage earners using a logistic regression. I began by creating a ‘top’ variable which assigned a 1 for rows with a wage value in the top 20%, and a 0 for all others. A logistic regression model was then built, using sex, education_c (education variable centered), and age_c (age variable centered) as the predictors. The intercept estimate is -2.1803636, meaning that an individual in the control group - female with average education and average age - would have odds of being a top20% wage earner of e^-2.1803636 or roughly 0.113. The sexMale coefficient suggests that males have a large increase in logodds by 0.9250467, meaning that the odds of a male with average education and age being a top 20% wage earner is e^(-2.1803636+0.9250467) or roughly 0.285. The logodds estimate for education_c was 0.2907678, meaning that for every additional year of education above the mean, the odds of being a top20% wage earner increase by a factor of e^0.2907678 (a 33.745% increase). Similarly, the estimate for age_c was 0.0656031, meaning that for every increase in age by 1 year above mean age, the odds of being a top20% wage earner increase by a factor of e^0.0656031 (a 6.78% increase).</p>
+<pre class="r"><code>SLID4$prob&lt;-predict(fit00, type = &quot;response&quot;)
+table(predict=as.numeric(SLID4$prob&gt;.5),truth=SLID4$Top20percIncome)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict   No  Yes  Sum
+##     0   3046  622 3668
+##     1    130  189  319
+##     Sum 3176  811 3987</code></pre>
+<p><em>Write-UP:</em></p>
+<p>The confusion matrix was computed and displayed above, comparing the predicted top20% wage earners and the actual top 20% wage earners. These variables were used to manually calculate Accuracy, Sensitivity (TPR), Specificity (TNR), and Precision (PPV) below:</p>
+<pre class="r"><code># Sensitivity (TPR):
+TPRsensitivity&lt;-189/811
+TPRsensitivity</code></pre>
+<pre><code>## [1] 0.2330456</code></pre>
+<pre class="r"><code># Specificity:(TNR)
+TNRspecificity &lt;- 3046/3176
+TNRspecificity</code></pre>
+<pre><code>## [1] 0.959068</code></pre>
+<pre class="r"><code># Accuracy:
+accuracy&lt;-(3046+189)/3987
+accuracy</code></pre>
+<pre><code>## [1] 0.811387</code></pre>
+<pre class="r"><code># Precision (PPV):
+precision&lt;-189/319
+precision</code></pre>
+<pre><code>## [1] 0.5924765</code></pre>
+<p><em>Write-UP:</em></p>
+<p>The density of the logodds by the binary top20% wage earner variable was plotted below using ggplot. Then, an ROC plot was graphed and AUC was calculated using the calc_auc function of the plotROC package. The results are interpreted under the plot.</p>
+<pre class="r"><code># Graphing Density of log-odds with ggplot:
+SLID4$logit&lt;-predict(fit00) 
+SLID4$Top20PercentWages&lt;-factor(SLID4$Top20percIncome,levels=c(&quot;Yes&quot;,&quot;No&quot;))
+ggplot(SLID4,aes(logit, fill=Top20PercentWages))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-8-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ROC plot:
+
+sens&lt;-function(p,data=SLID4, y=top) mean(SLID4[SLID4$top==1,]$prob&gt;p)
+spec&lt;-function(p,data=SLID4, y=top) mean(SLID4[SLID4$top==0,]$prob&lt;p)
+sensitivity&lt;-sapply(seq(0,1,.01),sens,SLID4)
+specificity&lt;-sapply(seq(0,1,.01),spec,SLID4)
+ROC&lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC$TPR&lt;-sensitivity
+ROC$FPR&lt;-1-specificity
+ROC%&gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+ scale_x_continuous(limits = c(0,1))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-8-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># AUC calculation:
+library(plotROC)
+ROCplot&lt;-ggplot(SLID4)+geom_roc(aes(d=top,m=education_c+age_c), n.cuts=0)
+calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.7204615</code></pre>
+<p><em>Write-UP:</em></p>
+<p>The above graph has an AUC of 0.7204615. This suggest that the model does a mediocre job at predicting the top20% wage earners and is far from perfect. When the model begins to show a good TPR of &gt; .75, the FPR is already around .3 which is not desirable.</p>
+<pre class="r"><code># 10 Fold CV:
+
+diags&lt;-NULL
+set.seed(348)
+
+data1&lt;-SLID4[sample(nrow(SLID4)),] 
+folds&lt;-cut(seq(1:nrow(SLID4)),breaks=10,labels=F) 
+
+for(i in 1:10){
+  train&lt;-data1[folds!=i,] 
+  test&lt;-data1[folds==i,] 
+  truth&lt;-test$top
+  
+  fit3&lt;- glm(top~sex+education_c+age_c+language, data=train, family=&quot;binomial&quot;)
+    probs&lt;- predict(fit3, test, type=&quot;response&quot;)
+      
+      diags&lt;-rbind(diags,class_diag(probs,truth)) 
+}
+
+apply(diags,2,mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.8118928 0.2363721 0.9591024 0.5972535 0.7917599</code></pre>
+<p><em>Write-UP:</em></p>
+<p>Accuracy, sensitivity, specificity, and PPV are listed above.</p>
+</div>
+</div>

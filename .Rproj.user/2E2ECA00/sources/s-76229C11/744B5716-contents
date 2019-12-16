@@ -1,0 +1,21 @@
+---
+title: 'Python: Defining Commands'
+author: Soren Cobb
+date: '2019-12-15'
+slug: python-defining-commands
+categories: []
+tags: []
+description: ''
+---
+
+*Yo yoy yo*
+
+```{r}
+
+library(reticulate)
+
+print("Yo yoy yo")
+
+```
+
+library(reticulate)

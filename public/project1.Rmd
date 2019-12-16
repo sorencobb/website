@@ -1,0 +1,131 @@
+---
+title: "Project 1: Approval Ratings During The Mueller Investigation"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Soren Cobb, scc2734
+install.packages("fivethirtyeight")
+install.packages("Hmisc")
+install.packages("pastecs")
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, fig.width=8)
+
+library(tidyr)
+library(tidyverse)
+library(fivethirtyeight)
+library(Hmisc)
+library(pastecs)
+
+
+```
+
+## 0. Introduction:
+
+  I chose to conduct this exploratory data analysis on two datasets provided by the 'fivethirteight' package that include statistics on the approval ratings of both President Donald Trump, and special prosecutor Robert Mueller during the Special Counsel investigation of Russia's alleged interference with the 2016 presidential election. Due to its fascinating scope and signifance in U.S. government and politics, this is a story that I have been following closely since 2017 and I was intrigued to analyze how the public's perception of both Trump and Mueller shifted throughout the investigation.
+  The datasets contain informative polling variables taken throughout the course of the investigation. These include the date of completion of the poll (end), Mueller's overall approval rating (approve.x), the size of the poll sample (sample_size.x), his approval rating with Democrats (approval_democrat), his approval rating with Republicans (approval_republican), Trump's adjusted approval rating (adjusted.approve), the Pollster that produced Trump's approval rating (pollster.y), and the weight/historical accuracy of such Pollster (weight). Due to many controversial events throughout the investigation, I expect to see rapid shifts in approval rating that coincide with signifcant events such as the firing of James Comey and subsequent hiring of Mueller, and William Barr providing his summary to Congress. I am also interested to see if there is a discrepancy in Trump's average approval rating between conservative and liberal Pollsters.
+  
+
+## 1. Tidying: Rearranging Wide/Long
+
+Couldn't get the reshaping to work, but the dataset is already tidy.
+```{r}
+
+```
+
+## 2. Joining/Merging Datasets:
+
+The two datasets were fully joined together by their shared date of polls. Only the desired variables were selected, as discussed earlier, which were the date of completion of the poll (end), Mueller's overall approval rating (approve.x), the size of the sample (sample_size.x) , his approval rating with Democrats (approval_democrat), his approval rating with Republicans (approval_republican), Trump's adjusted approval rating (adjusted.approve), the Pollster that produced Trump's approval rating (pollster.y), and the weight/historical accuracy of such Pollster (weight). NA/s for both the Mueller Pollster and Trump's Approval were dropped to remove rows, or poll dates, that contained polling data for only one of the individuals.
+```{r}
+initial_approvals_table <- full_join(mueller_approval_polls, trump_approval_poll, by=c("end"="end_date"))
+polling <- initial_approvals_table %>% select(end, sample_size.x, weight, pollster.x, pollster.y, approve.x, approve_republican, approve_democrat, adjusted_approve) %>% drop_na(pollster.x) %>% drop_na(adjusted_approve)
+glimpse(polling)
+
+```
+
+
+## 3. Wrangling
+
+# Using the 6 dplyr functions:
+
+The dplyr functions were first used to create a table called 'approvals', which is an overview of the approval ratings including a new variable for the difference between Trump and Mueller's ratings, called 'Difference_In_Approval'. For this new variable, a negative difference indicates that Mueller was less popular than Trump at the time, whereas a positive difference indicates when he was more popular. A glimpse is shown below. Exploration of the dataset revealed that Mueller's approval jumped rapidly up and down, sometimes being greatly favored and other times greatly unfavored, whereas Trump's approval remained relatively consistent and slightly increased throughout the investigation.
+
+Secondly, the filter function was used to specifically analyze these variables when CNN conducted the poll. Interestingly, these polls primarily found a large difference in approval rating in favor of Mueller from December 2017 to late 2018.
+```{r}
+
+
+approvals <- polling %>% mutate(Difference_In_Approval=(approve.x-adjusted_approve)) %>% select(end, Mueller_Approval=approve.x, Trump_Approval=adjusted_approve, Difference_In_Approval) 
+
+approvals %>% group_by(end) %>% summarise(mean(Mueller_Approval), mean(Trump_Approval), mean(Difference_In_Approval)) %>% arrange(desc(end))
+
+
+CNN_approval_comp <- polling %>% filter(pollster.x=="CNN/SSRS") %>% mutate(Difference_In_Approval=(approve.x-adjusted_approve)) %>% select(end, Mueller_Approval=approve.x, Trump_Approval=adjusted_approve, Difference_In_Approval) 
+
+CNN_approval_comp %>% group_by(end) %>% summarise(mean(Mueller_Approval), mean(Trump_Approval), mean(Difference_In_Approval)) %>% arrange(desc(end))
+
+
+```
+
+# Summary Statistics (mean, sd, var, n, quartiles, min, max, n_distinct, etc).:
+Next, the summary function, the describe function, and the stat.desc function were used to provide tables including the mean, sd, var, n, quartiles, min, max, and n_distinct of the 'approvals' dataset.
+```{r}
+
+summary(approvals)
+
+describe(approvals)
+
+stat.desc(approvals)
+```
+
+# Comparisons Grouped by Categorical Variables:
+
+Lastly, two comparitive analyses were performed by summarizing the means of this data when separated by categorical variables. The first table shows Mueller's approval percentage separated by both sample size and party. The second shows Mueller and Trump's approval ratings when grouped by date of the poll.
+
+# Average Mueller Approval Percentage Grouped by Sample Size and Party
+```{r}
+
+library(ggplot2)
+
+
+polling %>% group_by(sample_size.x) %>% summarise(., Avg_Democrat_Mueller_Approval=mean(approve_democrat), Avg_Republican_Mueller_Approval=mean(approve_republican)) %>% arrange(desc(sample_size.x))
+```
+
+## Average Trump and Mueller Approval Percentage Grouped by Date of Poll
+```{r}
+
+approvals %>% group_by(end) %>% summarise(., Avg_Mueller_Approval=mean(Mueller_Approval), Avg_Trump_Approval=mean(Trump_Approval), Difference_In_Avg_Approval=(mean(Mueller_Approval)-mean(Trump_Approval))) %>% arrange(desc(end))
+```
+
+  
+
+# 4. Visualizing
+
+The first graph that was made to further analyze the dataset was a bar graph for Trump's approval rating, separated by Pollster and filled by the weight (historical accuracy assigned by fivethirtyeight) of each Pollster. This graph was intended to investigate whether some of the Pollsters were biased either toward or against Trump. Interestingly, as shown below, some of Trump's highest approval ratings were given by Fox News, a historically conservative media platform, McLaughlin & Associates, a conservative firm that Trump had previously hired during his campaign, and the America First Policies, a non-profit which was created to support Trump's "America First" agenda. These Pollsters received mediocre to poor weight assessments, perhaps suggesting that they are more prone to bias. On the other hand, the Pollsters with historically liberal ties  were much more varied. US News had an average approval rating around 37%, whereas the Washington Post had a much more favorable approval rating of about 43% for Trump, both of which had rather good weight scores.
+```{r}
+polling %>% group_by(pollster.y) %>%
+  summarise(Average_Trump_Approval=mean(adjusted_approve), Weight_of_Poll=mean(weight)) %>%  
+  ggplot(aes(x=pollster.y, y=Average_Trump_Approval, fill=Weight_of_Poll))+ geom_bar(stat="summary")+ theme(axis.text.x = element_text(angle=60, hjust=1),)+ xlab("Pollster")+ ggtitle("Trump's Average Approval Rating by Pollster and their Weight") + ylab("Approval %")
+```
+
+
+In the second graph, the approval ratings of Trump and Mueller throughout the investigation were visualized. As expected, Mueller's approval rating greatly varied throughout, whereas Trump's remained relatively consistent other than a slight dip in late 2017. I suspect that this is due to the allegiance to the party for many Republicans. However, I found it very interesting that when Trump's approval rating slightly decreased in late 2017, Mueller's approval rapidly shot up to its maximum of 58. This coincided with many significant events in the investigation, such as the indictment of Trump's campaign manager Paul Manafort for his conspiracy against the United States and intent to launder money, and Trump's refusal to disclose his tax returns. Nonetheless, the graph illustrates that the favor of Mueller was shortlived, as his approval often dipped lower than Trump's, especially towards the end of the investigation when it failed to charge the president with a crime.
+```{r}
+polling %>% group_by(end) %>% summarise(Average_Trump_Approval=mean(adjusted_approve), Average_Mueller_Approval=mean(approve.x)) %>%
+  ggplot()+ geom_line(aes(x=end, y=Average_Mueller_Approval), color="black") + geom_line(aes(x=end, y=Average_Trump_Approval), color="red")+ ylab("Approval Rating") + xlab("Date of Poll")+ ggtitle("Approval Ratings of Mueller (Black) and Trump (Red) throughout the Mueller Investigation") + theme_grey()
+```
+
+# 5. Dimensionality Reduction
+PAM analysis was performed on the polling dataset, including 3 clusters of data. A table with further information is provided.
+```{r}
+library(cluster)
+pam1<-polling %>% pam(k=3)
+pamclust<-polling %>% mutate(cluster=as.factor(pam1$clustering)) 
+
+pamclust %>% ggplot(aes(approve.x,adjusted_approve,color=cluster))+geom_point()+ ylab("Trump's Approval Rating")+xlab("Mueller's Approval Rating")+ggtitle("PAM Cluster Analysis of Trump vs. Mueller Approval Ratings")
+
+polling[pam1$id.med,]
+```
+

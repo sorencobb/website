@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576463972491.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8AF2F565",
+    "lastKnownWriteTime" : 1576464112,
+    "last_content_update" : 1576464112174,
+    "path" : "~/Desktop/resume.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "21,0",
+        "last_setup_crc32" : "76229C11bb338d19",
+        "scrollLine" : "4",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

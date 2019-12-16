@@ -1,0 +1,180 @@
+---
+title: "HW 3"
+author: "SDS348 Fall 2019"
+date: "9/22"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5, fig.width=8,tidy.opts=list(width.cutoff=60),tidy=TRUE)
+library(tidyverse)
+```
+
+## Soren Cobb, scc2734
+
+**This homework is due on Sep 22, 2019 at 11:59pm. Please submit as a pdf file on Canvas.**
+
+*For all questions, include the R commands/functions that you used to find your answer. Answers without supporting code will not receive credit.*
+
+> ### How to submit this assignment
+>All homework assignments will be completed using R Markdown. These `.Rmd` files consist of >text/syntax (formatted using Markdown) alongside embedded R code. 
+>When you have completed the assignment (by adding R code inside codeblocks and supporting text outside of the codeblocks), create your document as follows:
+
+> - Click the "Knit" button (above) to create an .html file
+> - Open the html file in your internet browser to view
+> - Go to `File > Print` and print your .html file to a .pdf
+> - (or knit to PDF)
+> - Upload the .pdf file to Canvas
+
+---
+
+### Question 1:
+
+##### (a) (1 pt) Assume diastolic blood pressure is normally distributed in a certain population, with a mean of 82 mmHg and a standard deviation 11 mmHg. What proportion of this population has a diastolic blood pressure less than 60?
+
+```{R}
+# your code here
+pnorm(q=60, mean=82, sd=11)
+```
+
+*your answer here, 1-2 sentences*
+
+Only 2.275013 % of the population has a diastolic blood pressure less than 60 mmHg.
+
+##### (b) (1 pt) What diastolic blood pressure would put an individual from this population at the 98th percentile?
+
+```{R}
+
+qnorm(.98, mean=82, sd=11)
+
+```
+
+*your answer here, 1-2 sentences*
+
+A diastolic blood pressure of 104.5912 mmHg would put an individual of this population at 98th percentile.
+
+##### (c) (1 pt) What is the probability that a random individual from this population will have a diastolic blood pressure higher than 100? (Equivalently, what proportion of the population has a diastolic BP greater than 100 mmHg?)
+
+```{R}
+# your code here
+1-pnorm(q=100, mean=82, sd=11)
+```
+
+*your answer here, 1-2 sentences*
+
+The chance that an individual from this population chosen at random will have a diastolic blood pressure higher than 100 is 5.088175 %
+
+
+##### (d) (1 pt) What proportion of the population has a diastolic blood pressure bewteen 80 and 90?
+
+```{R}
+# your code here
+pnorm(90, 82, 11)-pnorm(80,82,11)
+```
+
+33.86078% of the population has a diastolic blood pressure between 80 and 90 mmHg.
+
+##### (e) (1 pt) Assume this is the distribution of diastolic blood pressure for a healthy population. If we observe an individual from an unknown population with a diastolic BP of 110 mmHg, what is the probability of observing an individual with a BP this extreme (i.e., in either direction of the mean) if the individual really came from a normal population with a mean of 82 and standard deviation of 11?
+
+```{R}
+# your code here
+2*(1-pnorm(110,82,11))
+```
+
+*your answer here, 1-2 sentences*
+
+There is a 1.091356% chance of observing an individual with a BP this extreme.
+
+
+### Question 2
+
+Now, set the seed to 348 with `set.seed()`. Then take a sample of size 10,000 from a normal distribution with a mean of 82 and a standard deviation of 11.
+
+##### (a) (3 pts) Using sum() on a logical vector, how many draws are less than 60? Using mean() on a logical vector, what proportion of the total draws is that? How far is your answer from pnorm() in 1.1 above?
+
+
+```{R}
+set.seed(348)
+
+# your code here
+
+samp<-rnorm(10000, 82, 11)
+sum(samp<60)
+mean(samp<60)
+
+```
+
+*your answer here, 1-2 sentences*
+Out of the 10,000 random draws, 219 were less than 60. Taking the mean of the logical vector below 60 shows that this is equivalent to 2.19 % of the total draws. This value is about 0.534987 % off from the expected 2.275013 % which was given by pnorm at 60, and is explained by the random variation.
+
+##### (b) (2 pts) What proportion of your sample is greater than 110 or less than 54?
+
+```{R}
+# your code here
+mean(samp>110)+mean(samp<54)
+```
+
+*your answer here, 1-2 sentences*
+
+1.1% of the random sample had values greater than 110 or less than 54.
+
+##### (c) (2 pts) Why are your answers close to what you got above? Why are they not exactly the same?
+
+*your answer here, 1-2 sentences*
+
+This was rather close to the 1.091356% proportion that was found above using pnorm at the same extremes because with a sample this large, the distribution is fairly close to a true normal distribution. Nonetheless, pnorm assumes that blood pressure is a continuous variable with infinite values, whereas this drawing of a random sample resulted in discrete values that are subjected to random variation. If the sample size was increased and approached infinity, the above proportion would approach 1.091356%.
+---
+
+##### (d) (3 pts) Using ggplot2, make a histogram of your sample. Set y=..density.. inside aes(). Overlay a normal distribution with stat_function(aes(samp), fun=dnorm, args=list(82,11)). Using geom_vline(xintercept=), add dashed vertical lines corresponding to the 2.5th and the 97.5th percentile of the sample
+
+```{R}
+# your code here
+df2<-data.frame(samp,height=dbinom(0:9999,size=10000,prob=.5))
+fdnorm<-dnorm(x)
+mean(samp<60.7)
+mean(samp>103.5)
+height<-dbinom(0:10000,size=10000,prob=.5)
+
+ggplot(data=df2, aes(samp),stat="identity")+
+  geom_histogram(aes(samp))+
+  stat_function(aes(samp), fun=dnorm, args=list(mean=82,sd=11), color="red")+
+  geom_vline(xintercept=60.7,linetype="dashed")+
+  geom_vline(xintercept=103.5,linetype="dashed")
+
+
+
+```
+
+### Question 3
+
+##### (a) (2 pt) Using `dplyr` functions (filter, summarize; do not use any [] or $) and the `faithful` dataset, what is the standard deviation of `eruptions` when `waiting` is less than the median? 
+
+```{R}
+
+faithful %>%
+  filter( faithful$waiting<median(faithful$waiting)) %>%
+  summarize(sd(faithful$eruptions))
+```
+
+##### (b) (3 pt) Using `dplyr` and the `faithful` dataset, create new variables that give `eruption` and `waiting` time in *hours* rather than *minutes*. Use `mutate()` *only once* to achieve this! Do not use any [] or $.
+
+```{R}
+# your code here
+
+faithful %>%
+  mutate(eruption_hours=eruptions/60) %>%
+  mutate(waiting_hours=waiting/60)
+
+
+```
+
+
+```{R, echo=F}
+## DO NOT DELETE THIS BLOCK!
+sessionInfo()
+Sys.time()
+Sys.info()
+```
